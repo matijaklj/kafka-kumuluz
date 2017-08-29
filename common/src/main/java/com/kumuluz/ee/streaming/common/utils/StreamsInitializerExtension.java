@@ -21,13 +21,11 @@
 
 package com.kumuluz.ee.streaming.common.utils;
 
-import com.kumuluz.ee.streaming.common.annotations.StreamListener;
+import com.kumuluz.ee.streaming.common.annotations.StreamProcessor;
 
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.AfterDeploymentValidation;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.ProcessBean;
+import javax.enterprise.inject.Default;
+import javax.enterprise.inject.spi.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,22 +33,11 @@ import java.util.List;
 /**
  * @author Matija Kljun
  */
-public interface ConsumerInitializerExtension extends Extension {
+public interface StreamsInitializerExtension extends Extension {
 
-    List<AnnotatedInstance<StreamListener>> instanceList = new ArrayList<>();
+    <X> void processAnnotatedTypes(@Observes ProcessAnnotatedType<X> pat);
 
-    default <X> void processStreamListeners(@Observes ProcessBean<X> pat) {
+    <X> void afterTypeDiscovery(@Observes AfterTypeDiscovery atd, BeanManager bm);
 
-        for (Method method : pat.getBean().getBeanClass().getMethods()) {
-            if (method.getAnnotation(StreamListener.class) != null) {
-
-                StreamListener annotation = method.getAnnotation(StreamListener.class);
-
-                instanceList.add(new AnnotatedInstance<>(pat.getBean(), method, annotation));
-            }
-        }
-    }
-
-    <X> void after(@Observes AfterDeploymentValidation adv, BeanManager bm);
-
+    <T> void processInjectionTarget(final @Observes ProcessInjectionTarget<T> pit);
 }

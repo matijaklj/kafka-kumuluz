@@ -16,6 +16,15 @@ You can enable KumuluzEE Event Streaming with Kafka by adding the following depe
 </dependency>
 ```
 
+If you would like to use the annotations for stream processing using the Kafka Streams API you have to include the `kafka-streams` dependency:
+```xml
+<dependency>
+    <groupId>org.apache.kafka</groupId>
+    <artifactId>kafka-streams</artifactId>
+    <version>${kafka-streams.version}</version>
+</dependency>
+```
+
 If you would like to collect Kafka related logs through the KumuluzEE Logs, you have to include the `kumuluzee-logs` implementation and slf4j-log4j adapter dependencies:
 ```xml
 <dependency>
@@ -33,10 +42,10 @@ If you would like to collect Kafka related logs through the KumuluzEE Logs, you 
 You also need to include a Log4j2 configuration, which should be in a file named `log4j2.xml`, located in `src/main/resources`. \
 For more information about KumuluzEE Logs visit the [KumuluzEE Logs Github page](https://github.com/kumuluz/kumuluzee-logs). \
 
-#### Configuring Kafka Producers and Consumers
+#### Configuring Kafka Producers, Consumers and Streams
 
-Kafka Consumers and Producers are configured with the common KumuluzEE configuration framework. Configuration properties can be defined with the environment variables or with the configuration files. Alternatively, they can also be stored in a configuration server, such as etcd or Consul (for which the KumuluzEE Config extension is required). For more details see the [KumuluzEE configuration wiki page](https://github.com/kumuluz/kumuluzee/wiki/Configuration) and [KumuluzEE Config](https://github.com/kumuluz/kumuluzee-config).
-The default configuration prefix for consumers is `consumer`, for producers is `producer`, but you can assign your custom configuration prefix. This way you can configure several different producers and/or consumers at the same time.
+Kafka Consumers, Producers and Streams are configured with the common KumuluzEE configuration framework. Configuration properties can be defined with the environment variables or with the configuration files. Alternatively, they can also be stored in a configuration server, such as etcd or Consul (for which the KumuluzEE Config extension is required). For more details see the [KumuluzEE configuration wiki page](https://github.com/kumuluz/kumuluzee/wiki/Configuration) and [KumuluzEE Config](https://github.com/kumuluz/kumuluzee-config).
+The default configuration prefix for consumers is `consumer`, for producers is `producer` and for streams is `streams`, but you can assign your custom configuration prefix. This way you can configure several different producers and/or consumers at the same time.
 
 The example below shows a sample configuration for the Kafka producer and consumer using default prefix.
 
@@ -184,6 +193,24 @@ public void onMessage(ConsumerRecord<String, String> record, Acknowledgement ack
 	// commit the message record
 	ack.acknowledge();
 }
+``` 
+
+### Stream Processor and Processor Controller annotation
+
+```java
+@StreamProcessor(id = "processor", autoStart = false)
+public KStreamBuilder streamProcessorBuilder() {
+	KStreamBuilder builder = new KStreamBuilder();    
+
+	// stream processing ...
+
+	return builder;
+}
+``` 
+
+```java
+@StreamProcessorController(id = "processor")
+private StreamsController streams;
 ``` 
 
 ## Changelog

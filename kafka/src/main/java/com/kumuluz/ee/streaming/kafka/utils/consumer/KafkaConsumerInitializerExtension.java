@@ -19,12 +19,12 @@
  *  limitations under the License.
 */
 
-package com.kumuluz.ee.streaming.kafka.utils;
+package com.kumuluz.ee.streaming.kafka.utils.consumer;
 
 import com.kumuluz.ee.streaming.common.annotations.StreamListener;
 import com.kumuluz.ee.streaming.common.utils.ConsumerFactory;
 import com.kumuluz.ee.streaming.common.utils.ConsumerInitializerExtension;
-import com.kumuluz.ee.streaming.common.utils.ListenerInstance;
+import com.kumuluz.ee.streaming.common.utils.AnnotatedInstance;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
@@ -48,26 +48,32 @@ public class KafkaConsumerInitializerExtension implements ConsumerInitializerExt
 
         kafkaConsumerFactory = new KafkaConsumerFactory();
 
-        for (ListenerInstance inst : instanceList)
+        // TODO remvoe this ?
+        for (AnnotatedInstance inst : instanceList)
             System.out.println(inst.getMethod().getName());
 
         if (instanceList.size() > 0) {
             ExecutorService executor = Executors.newFixedThreadPool(instanceList.size());
 
-            for (ListenerInstance inst : instanceList) {
+            for (AnnotatedInstance<StreamListener> inst : instanceList) {
 
                 StreamListener annotation = inst.getAnnotation();
                 Method method = inst.getMethod();
 
+                String groupId = annotation.groupId();
                 String[] topics = annotation.topics();
                 String configName = annotation.config();
                 boolean batchListener = annotation.batchListener();
 
+                Class<?> consumerRebalanceListener = null;
+                if(annotation.consumerRebalanceListener().length != 0)
+                    consumerRebalanceListener = annotation.consumerRebalanceListener()[0];
+
                 Object instance = bm.getReference(inst.getBean(), method.getDeclaringClass(), bm
                         .createCreationalContext(inst.getBean()));
 
-                ConsumerRunnable consumer = kafkaConsumerFactory.createConsumer(instance, configName, topics, method,
-                        batchListener);
+                ConsumerRunnable consumer = kafkaConsumerFactory.createConsumer(instance, configName, groupId, topics, method,
+                        batchListener, consumerRebalanceListener);
 
                 if (consumer != null) {
                     executor.submit(consumer);

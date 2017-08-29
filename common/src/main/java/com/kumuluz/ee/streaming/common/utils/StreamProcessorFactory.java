@@ -21,46 +21,12 @@
 
 package com.kumuluz.ee.streaming.common.utils;
 
-import com.kumuluz.ee.streaming.common.annotations.StreamListener;
-
-import javax.enterprise.inject.spi.Bean;
 import java.lang.reflect.Method;
 
 /**
  * @author Matija Kljun
  */
-public class ListenerInstance {
-    private Bean bean;
-    private Method method;
-    private StreamListener annotation;
+public interface StreamProcessorFactory <T> {
 
-    public ListenerInstance(Bean bean, Method method, StreamListener annotation) {
-        this.bean = bean;
-        this.method = method;
-        this.annotation = annotation;
-    }
-
-    public Bean getBean() {
-        return bean;
-    }
-
-    public void setBean(Bean bean) {
-        this.bean = bean;
-    }
-
-    public Method getMethod() {
-        return method;
-    }
-
-    public void setMethod(Method method) {
-        this.method = method;
-    }
-
-    public StreamListener getAnnotation() {
-        return annotation;
-    }
-
-    public void setAnnotation(StreamListener annotation) {
-        this.annotation = annotation;
-    }
+    T createStreamProcessor();
 }

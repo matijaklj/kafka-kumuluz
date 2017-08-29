@@ -36,10 +36,14 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface StreamListener {
 
+    @Nonbinding String groupId() default "";
+
     @Nonbinding String config() default "consumer";
 
     @Nonbinding String[] topics() default {};
 
     @Nonbinding boolean batchListener() default false;
+
+    @Nonbinding Class<?>[] consumerRebalanceListener() default {};
 }
 

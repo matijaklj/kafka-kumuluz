@@ -8,7 +8,6 @@
  *  You may obtain a copy of the License at
  *
  *  https://opensource.org/licenses/MIT
-
  *
  *  The software is provided "AS IS", WITHOUT WARRANTY OF ANY KIND, express or
  *  implied, including but not limited to the warranties of merchantability,
@@ -20,32 +19,27 @@
  *  limitations under the License.
 */
 
-package com.kumuluz.ee.streaming.kafka.utils;
+package com.kumuluz.ee.streaming.common.annotations;
 
-import com.kumuluz.ee.common.Extension;
-import com.kumuluz.ee.common.config.EeConfig;
-import com.kumuluz.ee.common.dependencies.*;
-import com.kumuluz.ee.common.wrapper.KumuluzServerWrapper;
-
-import java.util.logging.Logger;
+import javax.enterprise.util.Nonbinding;
+import javax.inject.Qualifier;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * KumuluzEE framework extension for Apache Kafka
- *
  * @author Matija Kljun
  */
-@EeExtensionDef(name = "kafka", group = EeExtensionGroup.STREAMING)
-@EeComponentDependency(EeComponentType.CDI)
-public class KafkaExtension implements Extension {
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface StreamProcessor {
 
-    private static final Logger log = Logger.getLogger(KafkaExtension.class.getName());
+    @Nonbinding String id();
 
-    @Override
-    public void init(KumuluzServerWrapper kumuluzServerWrapper, EeConfig eeConfig) {
-        log.info("Initialising Kumuluz Streaming extension.");
-    }
+    @Nonbinding String config() default "streams";
 
-    @Override
-    public void load() {
-    }
+    @Nonbinding boolean autoStart() default true;
+
 }

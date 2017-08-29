@@ -19,38 +19,21 @@
  *  limitations under the License.
 */
 
-package com.kumuluz.ee.streaming.kafka.utils;
+package com.kumuluz.ee.streaming.common.annotations;
 
-import com.kumuluz.ee.streaming.common.utils.ProducerFactory;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.common.config.ConfigException;
-
-import javax.enterprise.context.RequestScoped;
-import java.util.Map;
-import java.util.logging.Logger;
+import javax.enterprise.util.Nonbinding;
+import javax.inject.Qualifier;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author Matija Kljun
  */
-@RequestScoped
-public class KafkaProducerFactory implements ProducerFactory<Producer> {
-
-    static Logger log = Logger.getLogger(KafkaProducerFactory.class.getName());
-
-    @Override
-    public Producer createProducer(Map<String, Object> producerConfig) {
-
-        Producer producer = null;
-
-        try {
-            producer = new KafkaProducer(producerConfig);
-            log.info("Created Kafka Producer.");
-        } catch (ConfigException e) {
-            log.severe("Producer config exception: " + e.toString());
-        }
-
-        return producer;
-    }
-
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.METHOD})
+public @interface StreamProcessorController {
+    @Nonbinding String id();
 }

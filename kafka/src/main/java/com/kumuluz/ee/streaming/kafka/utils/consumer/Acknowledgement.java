@@ -8,7 +8,6 @@
  *  You may obtain a copy of the License at
  *
  *  https://opensource.org/licenses/MIT
-
  *
  *  The software is provided "AS IS", WITHOUT WARRANTY OF ANY KIND, express or
  *  implied, including but not limited to the warranties of merchantability,
@@ -20,32 +19,27 @@
  *  limitations under the License.
 */
 
-package com.kumuluz.ee.streaming.kafka.utils;
+package com.kumuluz.ee.streaming.kafka.utils.consumer;
 
-import com.kumuluz.ee.common.Extension;
-import com.kumuluz.ee.common.config.EeConfig;
-import com.kumuluz.ee.common.dependencies.*;
-import com.kumuluz.ee.common.wrapper.KumuluzServerWrapper;
-
-import java.util.logging.Logger;
+import com.kumuluz.ee.streaming.kafka.utils.consumer.ConsumerRunnable;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.common.TopicPartition;
 
 /**
- * KumuluzEE framework extension for Apache Kafka
- *
  * @author Matija Kljun
  */
-@EeExtensionDef(name = "kafka", group = EeExtensionGroup.STREAMING)
-@EeComponentDependency(EeComponentType.CDI)
-public class KafkaExtension implements Extension {
+public class Acknowledgement {
+    private ConsumerRunnable consumer;
 
-    private static final Logger log = Logger.getLogger(KafkaExtension.class.getName());
-
-    @Override
-    public void init(KumuluzServerWrapper kumuluzServerWrapper, EeConfig eeConfig) {
-        log.info("Initialising Kumuluz Streaming extension.");
+    public Acknowledgement(ConsumerRunnable consumer) {
+        this.consumer = consumer;
     }
 
-    @Override
-    public void load() {
+    public void acknowledge() {
+        consumer.ack();
+    }
+
+    public void acknowledge(java.util.Map<TopicPartition, OffsetAndMetadata> offsets) {
+        consumer.ack(offsets);
     }
 }
